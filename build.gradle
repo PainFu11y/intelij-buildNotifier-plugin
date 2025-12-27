@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.16.0'
+}
+
+group 'io.github.painfu11y.buildnotifier'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+}
+
+intellij {
+    version = '2023.1'
+    type = 'IC'
+    plugins = ['java']
+    downloadSources = true
+}
+
+
+patchPluginXml {
+    changeNotes = """
+      Initial version of Build Notifier Plugin.
+    """
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}

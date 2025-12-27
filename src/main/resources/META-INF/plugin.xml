@@ -1,0 +1,29 @@
+<idea-plugin>
+    <id>io.github.painfu11y.buildnotifier</id>
+    <name>Build Notifier</name>
+    <version>1.0.0</version>
+
+    <vendor email="avetisyan.vahan2003@gmail.com" url="https://github.com/PainFu11y">
+        Painfu11y
+    </vendor>
+
+    <description>
+        Sends notifications to Telegram or Email after build completion.
+    </description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="io.github.painfu11y.buildnotifier.service.BuildNotifierProjectService"/>
+        <toolWindow
+                    id="Build Notifier"
+                    anchor="right"
+                    icon="/icons/icon1.svg"
+                    factoryClass="io.github.painfu11y.buildnotifier.ui.BuildNotifierToolWindowFactory"
+                    canCloseContent="false"
+                    doNotActivateOnStart="false"/>
+        </extensions>
+
+
+</idea-plugin>

@@ -1,0 +1,20 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background circle -->
+  <circle cx="20" cy="20" r="18" fill="#1F2937"></circle>
+
+  <!-- Bell body -->
+  <path d="
+    M20 11
+    C16.5 11 14 13.6 14 16.8
+    V22
+    C14 23.3 13.2 24 12 24
+    H28
+    C26.8 24 26 23.3 26 22
+    V16.8
+    C26 13.6 23.5 11 20 11
+    Z" fill="#E5E7EB"></path>
+
+  <!-- Bell clapper -->
+  <circle cx="20" cy="26" r="2" fill="#E5E7EB"></circle>
+</svg>
