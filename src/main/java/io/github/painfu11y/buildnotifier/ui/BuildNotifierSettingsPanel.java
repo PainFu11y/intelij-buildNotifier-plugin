@@ -5,11 +5,13 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.ui.components.OnOffButton;
 import com.intellij.ui.components.JBTextField;
+import io.github.painfu11y.buildnotifier.dto.enums.NotificationMode;
+import io.github.painfu11y.buildnotifier.dto.enums.NotificationScope;
 import org.jetbrains.annotations.NotNull;
 import io.github.painfu11y.buildnotifier.BuildNotifierSettingsResolver;
 import io.github.painfu11y.buildnotifier.dto.EffectiveSettings;
 import io.github.painfu11y.buildnotifier.settings.BuildNotifierGlobalSettings;
-import io.github.painfu11y.buildnotifier.settings.BuildNotifierSettings;
+import io.github.painfu11y.buildnotifier.settings.BuildNotifierLocalSettings;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -19,22 +21,29 @@ public class BuildNotifierSettingsPanel extends JPanel {
 
     private final Project project;
 
-    private JComboBox<BuildNotifierSettings.NotificationMode> modeCombo;
+    private JComboBox<NotificationMode> modeCombo;
+
     private OnOffButton telegramToggle;
     private JBTextField telegramTokenField;
+
     private OnOffButton emailToggle;
     private JBTextField emailField;
-    private JComboBox<BuildNotifierSettings.Scope> scopeCombo;
+    private JComboBox<NotificationScope> scopeCombo;
+
+    private OnOffButton soundToggle;
+
 
     public BuildNotifierSettingsPanel(Project project) {
         this.project = project;
 
-        modeCombo = new JComboBox<>(BuildNotifierSettings.NotificationMode.values());
+        modeCombo = new JComboBox<>(NotificationMode.values());
         telegramToggle = new OnOffButton();
         telegramTokenField = new JBTextField();
         emailToggle = new OnOffButton();
         emailField = new JBTextField();
-        scopeCombo = new JComboBox<>(BuildNotifierSettings.Scope.values());
+        scopeCombo = new JComboBox<>(NotificationScope.values());
+        soundToggle = new OnOffButton();
+
 
         //  Load effective settings
         EffectiveSettings effective = BuildNotifierSettingsResolver.resolve(project);
@@ -44,6 +53,8 @@ public class BuildNotifierSettingsPanel extends JPanel {
         setTelegramToken(effective.telegramToken());
         setEmailEnabled(effective.isSendEmail());
         setEmail(effective.emailAddress());
+        setSoundEnabled(effective.isSoundEnabled());
+
 
         //  Listeners
         modeCombo.addActionListener(e -> saveMode());
@@ -75,6 +86,12 @@ public class BuildNotifierSettingsPanel extends JPanel {
             }
         });
 
+
+        soundToggle.addActionListener(e -> {
+            saveSound(soundToggle.isSelected());
+        });
+
+
         JPanel formPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent("Notification mode:", modeCombo)
                 .addSeparator()
@@ -85,6 +102,8 @@ public class BuildNotifierSettingsPanel extends JPanel {
                 .addComponent(emailField)
                 .addSeparator()
                 .addLabeledComponent("Scope:", scopeCombo)
+                .addSeparator()
+                .addComponent(toggleRow("Sound", soundToggle))
                 .getPanel();
 
         setLayout(new BorderLayout());
@@ -103,16 +122,16 @@ public class BuildNotifierSettingsPanel extends JPanel {
         EffectiveSettings effective = BuildNotifierSettingsResolver.resolve(project);
         if (effective.isAllProjects()) {
             BuildNotifierGlobalSettings g = BuildNotifierGlobalSettings.getInstance();
-            g.getState().mode = (BuildNotifierSettings.NotificationMode) modeCombo.getSelectedItem();
+            g.getState().mode = (NotificationMode) modeCombo.getSelectedItem();
         } else {
-            BuildNotifierSettings s = BuildNotifierSettings.getInstance(project);
-            s.setMode((BuildNotifierSettings.NotificationMode) modeCombo.getSelectedItem());
+            BuildNotifierLocalSettings s = BuildNotifierLocalSettings.getInstance(project);
+            s.setMode((NotificationMode) modeCombo.getSelectedItem());
         }
     }
 
     private void saveScope() {
-        BuildNotifierSettings s = BuildNotifierSettings.getInstance(project);
-        s.setScope((BuildNotifierSettings.Scope) scopeCombo.getSelectedItem());
+        BuildNotifierLocalSettings s = BuildNotifierLocalSettings.getInstance(project);
+        s.setScope((NotificationScope) scopeCombo.getSelectedItem());
     }
 
     private void saveTelegram(boolean enabled, String token) {
@@ -122,7 +141,7 @@ public class BuildNotifierSettingsPanel extends JPanel {
             g.getState().sendTelegram = enabled;
             g.getState().telegramToken = token;
         } else {
-            BuildNotifierSettings s = BuildNotifierSettings.getInstance(project);
+            BuildNotifierLocalSettings s = BuildNotifierLocalSettings.getInstance(project);
             s.setSendTelegram(enabled);
             s.setTelegramToken(token);
         }
@@ -135,20 +154,24 @@ public class BuildNotifierSettingsPanel extends JPanel {
             g.getState().sendEmail = enabled;
             g.getState().emailAddress = email;
         } else {
-            BuildNotifierSettings s = BuildNotifierSettings.getInstance(project);
+            BuildNotifierLocalSettings s = BuildNotifierLocalSettings.getInstance(project);
             s.setSendEmail(enabled);
             s.setEmailAddress(email);
         }
     }
 
-    public boolean isTelegramEnabled() { return telegramToggle.isSelected(); }
-    public String getTelegramToken() { return telegramTokenField.getText(); }
+    private void saveSound(boolean enabled) {
+        EffectiveSettings effective = BuildNotifierSettingsResolver.resolve(project);
+        if (effective.isAllProjects()) {
+            BuildNotifierGlobalSettings g = BuildNotifierGlobalSettings.getInstance();
+            g.getState().soundEnabled = enabled;
+        } else {
+            BuildNotifierLocalSettings s = BuildNotifierLocalSettings.getInstance(project);
+            s.setSoundEnabled(enabled);
+        }
+    }
 
-    public boolean isEmailEnabled() { return emailToggle.isSelected(); }
-    public String getEmail() { return emailField.getText(); }
 
-    public BuildNotifierSettings.NotificationMode getMode() { return (BuildNotifierSettings.NotificationMode) modeCombo.getSelectedItem(); }
-    public BuildNotifierSettings.Scope getScope() { return (BuildNotifierSettings.Scope) scopeCombo.getSelectedItem(); }
 
     public void setTelegramEnabled(boolean value) {
         telegramToggle.setSelected(value);
@@ -164,7 +187,14 @@ public class BuildNotifierSettingsPanel extends JPanel {
 
     public void setEmail(String value) { emailField.setText(value); }
 
-    public void setMode(BuildNotifierSettings.NotificationMode mode) { modeCombo.setSelectedItem(mode); }
+    public void setMode(NotificationMode mode) { modeCombo.setSelectedItem(mode); }
 
-    public void setScope(BuildNotifierSettings.Scope scope) { scopeCombo.setSelectedItem(scope); }
+    public void setScope(NotificationScope scope) { scopeCombo.setSelectedItem(scope); }
+
+
+    public void setSoundEnabled(boolean value) {
+        soundToggle.setSelected(value);
+    }
+
+
 }

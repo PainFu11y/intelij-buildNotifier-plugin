@@ -3,34 +3,33 @@ package io.github.painfu11y.buildnotifier.settings;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import io.github.painfu11y.buildnotifier.dto.enums.NotificationMode;
+import io.github.painfu11y.buildnotifier.dto.enums.NotificationScope;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @State(
         name = "BuildNotifierSettings",
-        storages = {
-                @Storage("buildNotifierSettings.xml")
-        }
+        storages = @Storage("buildNotifierSettings.xml")
 )
 @Service(Service.Level.PROJECT)
-public final class BuildNotifierSettings implements PersistentStateComponent<BuildNotifierSettings.State>, DumbAware {
+public final class BuildNotifierLocalSettings
+        implements PersistentStateComponent<BuildNotifierLocalSettings.State>, DumbAware {
 
     public static class State {
         public NotificationMode mode = NotificationMode.ASK_EVERY_TIME;
 
-        public boolean sendTelegram = true;
+        public boolean sendTelegram = false;
         public String telegramToken = "";
 
-        public boolean sendEmail = true;
+        public boolean sendEmail = false;
         public String emailAddress = "";
 
-        public boolean forAllProjects = true;
-        public Scope scope = Scope.ALL_PROJECTS;
+        public boolean soundEnabled = false;
+
+        public static NotificationScope scope = NotificationScope.CURRENT_PROJECT;
     }
 
-    public enum NotificationMode { DISABLED, ENABLED, ASK_EVERY_TIME }
-
-    public enum Scope { ALL_PROJECTS, CURRENT_PROJECT }
 
     private State state = new State();
 
@@ -45,6 +44,9 @@ public final class BuildNotifierSettings implements PersistentStateComponent<Bui
         this.state = state;
     }
 
+    public static BuildNotifierLocalSettings getInstance(Project project) {
+        return project.getService(BuildNotifierLocalSettings.class);
+    }
 
     public NotificationMode getMode() {
         return state.mode;
@@ -70,23 +72,6 @@ public final class BuildNotifierSettings implements PersistentStateComponent<Bui
         state.sendEmail = sendEmail;
     }
 
-    public boolean isForAllProjects() {
-        return state.forAllProjects;
-    }
-
-    public void setForAllProjects(boolean forAllProjects) {
-        state.forAllProjects = forAllProjects;
-    }
-
-    public Scope getScope() {
-        return state.scope;
-    }
-
-    public void setScope(Scope scope) {
-        state.scope = scope;
-    }
-
-
     public String getTelegramToken() {
         return state.telegramToken;
     }
@@ -103,8 +88,19 @@ public final class BuildNotifierSettings implements PersistentStateComponent<Bui
         state.emailAddress = emailAddress;
     }
 
+    public boolean isSoundEnabled() {
+        return state.soundEnabled;
+    }
 
-    public static BuildNotifierSettings getInstance(Project project) {
-        return project.getService(BuildNotifierSettings.class);
+    public void setSoundEnabled(boolean soundEnabled) {
+        state.soundEnabled = soundEnabled;
+    }
+
+    public NotificationScope getScope() {
+        return State.scope;
+    }
+
+    public void setScope(NotificationScope scope) {
+        State.scope = scope;
     }
 }

@@ -9,13 +9,17 @@
 
     <description>
         Sends notifications to Telegram or Email after build completion.
+        Notify with a sound effect when the build is finished.
     </description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="io.github.painfu11y.buildnotifier.service.BuildNotifierProjectService"/>
+
+        <externalSystemTaskNotificationListener
+                implementation="io.github.painfu11y.buildnotifier.listeners.TaskFinishedListener"/>
+
         <toolWindow
                     id="Build Notifier"
                     anchor="right"

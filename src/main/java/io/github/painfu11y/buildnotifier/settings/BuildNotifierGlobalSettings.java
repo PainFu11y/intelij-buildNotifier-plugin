@@ -5,26 +5,29 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import io.github.painfu11y.buildnotifier.dto.enums.NotificationMode;
 import org.jetbrains.annotations.NotNull;
 
-@Service(Service.Level.APP)
+
 @State(
         name = "BuildNotifierGlobalSettings",
         storages = @Storage("buildNotifierGlobalSettings.xml")
 )
+@Service(Service.Level.APP)
 public final class BuildNotifierGlobalSettings
         implements PersistentStateComponent<BuildNotifierGlobalSettings.State> {
 
     public static class State {
-        public BuildNotifierSettings.NotificationMode mode = BuildNotifierSettings.NotificationMode.ASK_EVERY_TIME;
-        public boolean sendTelegram = true;
-        public String telegramToken = "";
-        public boolean sendEmail = true;
-        public String emailAddress = "";
-    }
+        public NotificationMode mode = NotificationMode.ASK_EVERY_TIME;
 
-    public void setState(State state) {
-        this.state = state;
+        public boolean sendTelegram = false;
+        public String telegramToken = "";
+
+
+        public boolean sendEmail = false;
+        public String emailAddress = "";
+
+        public boolean soundEnabled = false;
     }
 
     private State state = new State();
@@ -44,7 +47,7 @@ public final class BuildNotifierGlobalSettings
                 .getService(BuildNotifierGlobalSettings.class);
     }
 
-    public BuildNotifierSettings.NotificationMode getMode() {
+    public NotificationMode getMode() {
         return state.mode;
     }
 
@@ -63,5 +66,10 @@ public final class BuildNotifierGlobalSettings
     public String getEmailAddress() {
         return state.emailAddress;
     }
+
+    public boolean isSoundEnabled() {
+        return state.soundEnabled;
+    }
+
 
 }
