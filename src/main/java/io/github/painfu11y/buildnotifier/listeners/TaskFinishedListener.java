@@ -1,5 +1,6 @@
 package io.github.painfu11y.buildnotifier.listeners;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId;
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskNotificationListenerAdapter;
 import com.intellij.openapi.project.Project;
@@ -28,13 +29,12 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
         super.onStart(id, workingDir);
 
         Project project = id.findProject();
-        if (project == null) return;
+        if (project == null || !ApplicationManager.getApplication().isActive()) return;
 
         var settings = BuildNotifierSettingsResolver.resolve(project);
 
 
-        if (settings.mode().toString() == NotificationMode.ASK_EVERY_TIME.toString()) {
-
+        if (settings.mode() == NotificationMode.ASK_EVERY_TIME) {
             SwingUtilities.invokeLater(() -> {
                 int result = showConfirmationDialog();
 
@@ -45,8 +45,7 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
                 }
             });
 
-        }
-        if (settings.mode() == NotificationMode.DISABLED) {
+        }else if (settings.mode() == NotificationMode.DISABLED) {
             isSendNotification = false;
         } else {
             isSendNotification = true;
@@ -63,7 +62,7 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
         }
 
         Project project = id.findProject();
-        if (project == null) return;
+        if (project == null || !ApplicationManager.getApplication().isActive()) return;
 
         var settings = BuildNotifierSettingsResolver.resolve(project);
 
@@ -80,12 +79,12 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
         }
 
         Project project = id.findProject();
-        if (project == null) return;
+        if (project == null || !ApplicationManager.getApplication().isActive()) return;
 
         var settings = BuildNotifierSettingsResolver.resolve(project);
 
         if (settings.isSoundEnabled()) {
-            playSuccessSound();
+            playFailureSound();
         }
     }
 

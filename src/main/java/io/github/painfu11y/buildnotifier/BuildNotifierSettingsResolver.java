@@ -10,16 +10,11 @@ public final class BuildNotifierSettingsResolver {
 
     public static EffectiveSettings resolve(Project project) {
 
-        BuildNotifierLocalSettings projectSettings =
-                BuildNotifierLocalSettings.getInstance(project);
-
+        BuildNotifierLocalSettings projectSettings = BuildNotifierLocalSettings.getInstance(project);
         if (projectSettings.getScope() == NotificationScope.ALL_PROJECTS) {
-            BuildNotifierGlobalSettings global =
-                    BuildNotifierGlobalSettings.getInstance();
-
+            BuildNotifierGlobalSettings global = BuildNotifierGlobalSettings.getInstance();
             return EffectiveSettings.fromGlobal(global);
         }
-
         return EffectiveSettings.fromProject(projectSettings);
     }
 }

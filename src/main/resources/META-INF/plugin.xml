@@ -27,6 +27,12 @@
                     factoryClass="io.github.painfu11y.buildnotifier.ui.BuildNotifierToolWindowFactory"
                     canCloseContent="false"
                     doNotActivateOnStart="false"/>
+
+        <projectConfigurable
+                id="buildNotifier.settings"
+                displayName="Build Notifier"
+                instance="io.github.painfu11y.buildnotifier.settings.BuildNotifierConfigurable"/>
+
         </extensions>
 
 

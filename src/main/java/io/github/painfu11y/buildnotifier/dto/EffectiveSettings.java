@@ -37,9 +37,5 @@ public record EffectiveSettings(
                 NotificationScope.CURRENT_PROJECT
         );
     }
-    public boolean isAllProjects(){
-        return scope == NotificationScope.ALL_PROJECTS;
-    }
-
 }
 
