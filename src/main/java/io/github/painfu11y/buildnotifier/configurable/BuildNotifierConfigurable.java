@@ -56,7 +56,11 @@ public class BuildNotifierConfigurable implements SearchableConfigurable {
         String uiTelegramToken = panel.getTelegramTokenField().getText();
 
         boolean uiEmailEnabled = panel.getEmailToggle().isSelected();
-        String uiEmail = panel.getEmailToField().getText();
+        String uiEmailFrom = panel.getEmailFromField().getText();
+        String uiEmailTo = panel.getEmailToField().getText();
+        String uiSmtpHost = panel.getSmtpHostField().getText();
+        String uiSmtpPort = panel.getSmtpPortField().getText();
+        String uiEmailPassword = panel.getEmailPasswordField().getText();
 
         boolean uiSoundEnabled = panel.getSoundToggle().isSelected();
 
@@ -65,7 +69,11 @@ public class BuildNotifierConfigurable implements SearchableConfigurable {
                 || uiTelegramEnabled != effective.isSendTelegram()
                 || !safeEquals(uiTelegramToken, effective.telegramToken())
                 || uiEmailEnabled != effective.isSendEmail()
-                || !safeEquals(uiEmail, effective.emailAddress())
+                || !safeEquals(uiEmailFrom, effective.emailFrom())
+                || !safeEquals(uiEmailTo, effective.emailAddress())
+                || !safeEquals(uiSmtpHost, effective.smtpHost())
+                || !safeEquals(uiSmtpPort, effective.smtpPort())
+                || !safeEquals(uiEmailPassword, effective.emailPassword())
                 || uiSoundEnabled != effective.isSoundEnabled();
     }
 
@@ -90,12 +98,12 @@ public class BuildNotifierConfigurable implements SearchableConfigurable {
         if (scope == NotificationScope.ALL_PROJECTS) {
             BuildNotifierGlobalSettings g = BuildNotifierGlobalSettings.getInstance();
 
-            g.getState().mode = mode;
-            g.getState().sendTelegram = telegramEnabled;
-            g.getState().telegramToken = telegramToken;
-            g.getState().sendEmail = emailEnabled;
-            g.getState().emailAddress = email;
-            g.getState().soundEnabled = soundEnabled;
+            g.setMode(mode);
+            g.setSendTelegram(telegramEnabled);
+            g.setTelegramToken(telegramToken);
+            g.setSendEmail(emailEnabled);
+            g.setEmailAddress(email);
+            g.setSoundEnabled(soundEnabled);
         } else {
             BuildNotifierLocalSettings s =
                     BuildNotifierLocalSettings.getInstance(project);

@@ -10,17 +10,26 @@ public record EffectiveSettings(
         boolean isSendTelegram,
         String telegramToken,
         boolean isSendEmail,
+        String emailFrom,
         String emailAddress,
+        String smtpHost,
+        String smtpPort,
+        String emailPassword,
         boolean isSoundEnabled,
         NotificationScope scope
 ) {
+
     public static EffectiveSettings fromGlobal(BuildNotifierGlobalSettings g) {
         return new EffectiveSettings(
                 g.getMode(),
                 g.isSendTelegram(),
                 g.getTelegramToken(),
                 g.isSendEmail(),
+                g.getEmailFrom(),
                 g.getEmailAddress(),
+                g.getSmtpHost(),
+                g.getSmtpPort(),
+                g.getEmailPassword(),
                 g.isSoundEnabled(),
                 NotificationScope.ALL_PROJECTS
         );
@@ -32,10 +41,13 @@ public record EffectiveSettings(
                 p.isSendTelegram(),
                 p.getTelegramToken(),
                 p.isSendEmail(),
+                p.getEmailFrom(),
                 p.getEmailAddress(),
+                p.getSmtpHost(),
+                p.getSmtpPort(),
+                p.getEmailPassword(),
                 p.isSoundEnabled(),
                 NotificationScope.CURRENT_PROJECT
         );
     }
 }
-

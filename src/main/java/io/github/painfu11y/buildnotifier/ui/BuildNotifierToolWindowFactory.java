@@ -48,7 +48,6 @@ public class BuildNotifierToolWindowFactory implements ToolWindowFactory {
         return true;
     }
 
-
     private void loadFromSettings(Project project,
                                   BuildNotifierSettingsPanel panel) {
 
@@ -60,8 +59,13 @@ public class BuildNotifierToolWindowFactory implements ToolWindowFactory {
         panel.setTelegramEnabled(settings.isSendTelegram());
         panel.setTelegramToken(settings.getTelegramToken());
 
+        // Email
         panel.setEmailEnabled(settings.isSendEmail());
-        panel.setEmail(settings.getEmailAddress());
+        panel.getEmailFromField().setText(settings.getEmailFrom());
+        panel.getEmailToField().setText(settings.getEmailAddress());
+        panel.getSmtpHostField().setText(settings.getSmtpHost());
+        panel.getSmtpPortField().setText(settings.getSmtpPort());
+        panel.getEmailPasswordField().setText(settings.getEmailPassword());
 
         panel.setSoundEnabled(settings.isSoundEnabled());
     }
@@ -96,14 +100,36 @@ public class BuildNotifierToolWindowFactory implements ToolWindowFactory {
                 settings.setSendEmail(panel.isEmailEnabled())
         );
 
-        panel.getEmailToField()
-                .getDocument()
-                .addDocumentListener(new OnChangeDocumentListener() {
-                    @Override
-                    protected void onChange() {
-                        settings.setEmailAddress(panel.getEmail());
-                    }
-                });
+        panel.getEmailFromField().getDocument().addDocumentListener(new OnChangeDocumentListener() {
+            @Override
+            protected void onChange() {
+                settings.setEmailFrom(panel.getEmailFromField().getText());
+            }
+        });
+        panel.getEmailToField().getDocument().addDocumentListener(new OnChangeDocumentListener() {
+            @Override
+            protected void onChange() {
+                settings.setEmailAddress(panel.getEmailToField().getText());
+            }
+        });
+        panel.getSmtpHostField().getDocument().addDocumentListener(new OnChangeDocumentListener() {
+            @Override
+            protected void onChange() {
+                settings.setSmtpHost(panel.getSmtpHostField().getText());
+            }
+        });
+        panel.getSmtpPortField().getDocument().addDocumentListener(new OnChangeDocumentListener() {
+            @Override
+            protected void onChange() {
+                settings.setSmtpPort(panel.getSmtpPortField().getText());
+            }
+        });
+        panel.getEmailPasswordField().getDocument().addDocumentListener(new OnChangeDocumentListener() {
+            @Override
+            protected void onChange() {
+                settings.setEmailPassword(panel.getEmailPasswordField().getText());
+            }
+        });
 
         panel.getSoundToggle().addActionListener(e ->
                 settings.setSoundEnabled(panel.isSoundEnabled())

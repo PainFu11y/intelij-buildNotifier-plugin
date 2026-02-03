@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.util.ui.UIUtil;
 import io.github.painfu11y.buildnotifier.BuildNotifierSettingsResolver;
 import io.github.painfu11y.buildnotifier.dto.enums.NotificationMode;
+import jakarta.mail.MessagingException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -50,8 +51,6 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
         } else {
             isSendNotification = true;
         }
-
-
     }
 
     @Override
@@ -66,6 +65,15 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
 
         var settings = BuildNotifierSettingsResolver.resolve(project);
 
+        if(settings.isSendEmail()){
+            try {
+                service.EmailSenderService.sendEmail(settings.smtpHost(), settings.smtpPort(), settings.emailFrom(),
+                                                    settings.emailPassword(), settings.emailAddress(),
+                        "Build Success" , "build success");
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (settings.isSoundEnabled()) {
             playSuccessSound();
         }
@@ -83,6 +91,15 @@ public class TaskFinishedListener extends ExternalSystemTaskNotificationListener
 
         var settings = BuildNotifierSettingsResolver.resolve(project);
 
+        if(settings.isSendEmail()){
+            try {
+                service.EmailSenderService.sendEmail(settings.smtpHost(), settings.smtpPort(), settings.emailFrom(),
+                        settings.emailPassword(), settings.emailAddress(),
+                        "Build Failded" , "build failed");
+            } catch (MessagingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
         if (settings.isSoundEnabled()) {
             playFailureSound();
         }
